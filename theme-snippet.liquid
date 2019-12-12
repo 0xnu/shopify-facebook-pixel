@@ -1,0 +1,196 @@
+{%- comment -%}
+Facebook Pixel Setup for One Velocity LLC.
+Published Version: 2.0.0
+We recommend the app Facebook Pixel Helper for debugging: https://chrome.google.com/webstore/detail/facebook-pixel-helper/fdgfkebogiimcoedlicjlajpkdmockpc?hl=en
+{%- endcomment -%}
+{%- comment -%}
+Facebook Pixel Setup for One Velocity LLC.
+Published Version: 1.0.0
+We recommend the app Facebook Pixel Helper for debugging: https://chrome.google.com/webstore/detail/facebook-pixel-helper/fdgfkebogiimcoedlicjlajpkdmockpc?hl=en
+{%- endcomment -%}
+
+
+<!-- Enter your pixel id below where it says 'XXXXXXXXXXX'
+Make sure to leave the '' on both sides of the ID -->
+
+{% assign facebook_pixel = 'XXXXXXXXXXX' %}
+
+<!-- Enter your ATC class and Checkout Class Below -->
+
+{% assign add_to_cart = 'AAAAAAA' %}
+{% assign checkout_button = 'BBBBBB' %}
+
+{%- if page.template contains 'product' -%}
+{%- assign page_type = 'product' -%}
+{%- elsif page.template contains 'page' -%}
+{%- assign page_type = 'product' -%}
+{%- elsif page.template contains 'search' -%}
+{%- assign page_type = 'search' -%}
+{%- elsif page.template contains 'cart' -%}
+{%- assign page_type = 'cart' -%}
+{%- else -%}
+{%- assign page_type = 'standard' -%}
+{%- endif -%}
+
+<!-- Facebook Custom Audience Pixel Code - Placed on Every Page of Site -->
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+   if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+   n.queue=[];t=b.createElement(e);t.async=!0;
+   t.src=v;s=b.getElementsByTagName(e)[0];
+   s.parentNode.insertBefore(t,s)}(window, document,'script',
+                                   'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '140172279938144');
+  fbq('track', 'PageView');
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{facebook_pixel}}&ev=PageView&noscript=1" />
+</noscript>
+<!-- End Facebook Custom Audience Pixel Code -->
+
+<!-- Facebook Paramater Guide
+// Recommended For Every Event - This is used to calculate ROAS (Return On Ad Spend) and does not have to be an actual transaction value.
+value: value of a user performing this event to the business //	cd[value]=
+currency: currency for the value specified // cd[currency]=
+
+// Required for Dynamic Product Ads
+content_ids: Product ids associated with the event. e.g. SKUs of products for AddToCart event: ['ABC123', 'XYZ789'] // cd[content_ids]=
+content_type: Either 'product' or 'product_group' based on the content_ids being passed. If the ids being passed in content_ids parameter are ids of products then the value should be 'product'. If product group ids are being passed, then the value should be 'product_group'. // cd[content_type]=
+
+// Everything Else
+content_name: Name of the page/product // cd[content_name]=
+content_category: Category of the page/product // cd[content_category]=
+content_ids: Product ids associated with the event. e.g. SKUs of products for AddToCart event: ['ABC123', 'XYZ789'] // cd[content_ids]=
+content_type: Either 'product' or 'product_group' based on the content_ids being passed. If the ids being passed in content_ids parameter are ids of products then the value should be 'product'. If product group ids are being passed, then the value should be 'product_group'. // cd[content_type]=
+num_items: Used with InitiateCheckout event. The number of items that checkout was initiated for. // cd[num_items]=
+search_string: Used with the Search event. The string entered by the user for the search // cd[search_string]=
+status: Used with the CompleteRegistration event, to show the status of the registration. // cd[status]=
+
+-->
+
+<!-- Facebook Conversion Event: View Content -->
+<script>
+  fbq('track', 'ViewContent'{% if page_type == 'product' %}, {
+    value: {{product.price | money_without_currency}},
+    currency: '{{shop.currency}}',
+    content_name: '{{product.title}}',
+    content_type: 'product', // Required for Dynamic Product Ads
+    content_ids: '{{product.id}}' // Required for Dynamic Product Ads
+  }{%endif%});
+
+</script>
+
+<!-- End Facebook Conversion Event: View Content -->
+
+
+{% if page_type == 'search' %}
+<!-- Facebook Conversion Event: Search -->
+<script>
+  var searchString = document.getElementsByClassName('search-field')[0].value;
+  fbq('track', 'Search', {
+    value: 0.10,
+    currency: '{{shop.currency}}',
+    content_category: 'snippets',
+    content_ids: 'search_content',
+    search_string: {{search.terms}}
+  });
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{facebook_pixel}}&ev=Search&cd[value]=0.10&cd[currency]='{{shop.currency}}'&cd[content_category]=snippets&cd[content_ids]=woo-123&cd[search_string]=searchString&noscript=1" />
+</noscript>
+<!-- End Facebook Conversion Event: Search -->
+{% endif %}
+
+{% if template contains 'product' %}
+<!-- Facebook Conversion Event: Add to cart -->
+<script>
+
+  $('{{add_to_cart}}').click(function(){
+    fbq('track', 'AddToCart', {
+      value: {{product.price | money_without_currency}},
+      currency: '{{shop.currency}}',
+      content_name: '{{product.title}}',
+      content_type: 'product', // Required for Dynamic Product Ads
+      content_ids: '{{product.id}}' // Required for Dynamic Product Ads
+    });
+  });
+
+
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{facebook_pixel}}&ev=AddToCart&cd[value]=10.00&cd[currency]={{shop.currency}}&cd[content_name]=Product%20Name&cd[content_type]=product&cd[content_ids]=woo-123&noscript=1" />
+</noscript>
+<!-- End Facebook Conversion Event: Add to cart -->
+{% endif %}
+
+{% if page_type == 'cart' %}
+<!-- Facebook Conversion Event: Initiate Checkout -->
+<script>checkout
+$('{{checkout_button}}').click(function(){
+
+  fbq('track', 'InitiateCheckout', {
+  value: {{cart.total | money_without_currency}},
+    currency: '{{shop.currency}}',
+    content_name: 'Checkout'
+  });
+
+  })
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{facebook_pixel}}&ev=InitiateCheckout&cd[value]=0.10&cd[currency]='{{shop.currency}}'&cd[content_name]=Checkout&cd[content_category]=snippets&cd[content_ids]=woo-123&cd[num_items]=1&noscript=1" />
+</noscript>
+<!-- End Facebook Conversion Event: Initiate Checkout -->
+{% endif %}
+
+
+
+{% if page.handle contains 'contact_posted=true' %}
+<!-- Facebook Conversion Event: Lead -->
+<script>
+  fbq('track', 'Lead', {
+    value: 0.10,
+    currency: '{{shop.currency}}',
+    content_name: 'Report',
+    content_category: 'Customer'
+  });
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{facebook_pixel}}&ev=Lead&cd[value]=0.10&cd[currency]='{{shop.currency}}'&cd[content_name]=Report&cd[content_category]=B2B&noscript=1" />
+</noscript>
+<!-- End Facebook Conversion Event: Lead -->
+{% endif %}
+
+{% comment %}
+
+<!-- Facebook Conversion Event: Purchase -->
+<script>
+  fbq('track', 'Purchase', {
+    value: 10.00,
+    currency: '{{shop.currency}}',
+    content_name: '{{product.title}}',
+    content_type: 'product',
+    content_ids: 'woo-123',
+    num_items: 1
+  });
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{facebook_pixel}}&ev=Purchase&cd[value]=10.00&cd[currency]={{shop.currency}}&cd[content_name]=Product%20Name&cd[content_type]=product&cd[content_ids]=woo-123&cd[num_items]=1&noscript=1" />
+</noscript>
+<!-- End Facebook Conversion Event: Purchase -->
+
+<!-- Facebook Conversion Event: Complete Registration -->
+<script>
+  fbq('track', 'CompleteRegistration', {
+    value: 0.10,
+    currency: '{{shop.currency}}',
+    content_name: 'Signup',
+    status: 'complete'
+  });
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{facebook_pixel}}&ev=CompleteRegistration&cd[value]=0.10&cd[currency]='{{shop.currency}}'&cd[content_name]=Signup&cd[status]=complete&noscript=1" />
+</noscript>
+<!-- End Facebook Conversion Event: Complete Registration -->
+{% endcomment %}
